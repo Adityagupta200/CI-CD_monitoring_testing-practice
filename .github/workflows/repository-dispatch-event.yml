@@ -1,0 +1,21 @@
+name: Repository Dispatch Workflow
+
+on:
+  repository_dispatch:
+    # This workflow will trigger when a repository dispatch event is received
+    # with the event_types "test_trigger"
+    types: [test_trigger]
+
+jobs:
+  dispatch-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Show Dispatch Info
+        run: |
+          echo "Repository dispatch event received"
+          echo "Event type: ${{ github.event.action }}"
+          echo "Sender: ${{ github.event.sender.login }}"
+          echo "Payload: ${{ toJSON(github.event.client_payload) }}"
