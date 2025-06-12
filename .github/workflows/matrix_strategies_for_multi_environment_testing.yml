@@ -1,0 +1,14 @@
+name: Matrix Strategies for Multi-Environment Testing
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        python_version: [3.8,3.9,3.10]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/setup-python@v4
+        with:
+          python_version: ${{ matrix.python_version }}
+
