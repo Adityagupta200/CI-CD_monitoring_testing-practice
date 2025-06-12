@@ -39,7 +39,7 @@ jobs:
       MODEL_VERSION: ${{ github.ref }}
       ENVIRONMENT: ${{ env.ENVIRONMENT }}
     steps: 
-      - name: Checkout code:
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Deploy to Production
