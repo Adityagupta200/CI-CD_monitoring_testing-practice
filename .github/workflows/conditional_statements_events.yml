@@ -37,12 +37,12 @@ jobs:
     if: ${{success() && github.ref == 'refs/heads/main'}}
     env:
       MODEL_VERSION: ${{ github.ref }}
-      ENVIRONMENT: $ENVIRONMENT
+      ENVIRONMENT: ${{ENVIRONMENT}}
     steps: 
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Deploy to Production
         run: |
-          echo "Deploying model version $MODEL_VERSION to $ENVIRONMENT"
-          python .github/workflows/deploy.py --version $MODEL_VERSION --env $ENVIRONMENT
+          echo "Deploying model version $MODEL_VERSION to ${{ENVIRONMENT}}"
+          python .github/workflows/deploy.py --version $MODEL_VERSION --env ${{ENVIRONMENT}}
