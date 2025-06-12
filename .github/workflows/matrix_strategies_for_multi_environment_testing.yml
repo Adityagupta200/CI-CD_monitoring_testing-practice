@@ -14,6 +14,9 @@ jobs:
           - python-version: "3.10"
             platform: cpu
             experimental: true
+        exclude:
+          - python-version: "3.9"
+            platform: gpu
     steps:
       - uses: actions/setup-python@v4
         with:
