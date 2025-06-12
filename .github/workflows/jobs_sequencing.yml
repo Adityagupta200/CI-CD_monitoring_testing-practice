@@ -1,0 +1,16 @@
+name: Job sequencing Example Workflow
+
+on: push
+
+jobs:
+  data-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate data
+        run: python validate_data.py
+  model-training:
+    runs-on: ubuntu-latest
+    needs: data-validation
+    steps:
+      - name: Train model
+        run: python train_model.py
