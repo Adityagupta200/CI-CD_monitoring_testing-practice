@@ -1,5 +1,5 @@
 name: Matrix Strategies for Multi-Environment Testing
-
+on: push
 jobs:
   test:
     strategy:
