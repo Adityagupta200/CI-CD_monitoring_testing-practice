@@ -1,0 +1,48 @@
+name: MLOps Conditional Deployment
+
+on: 
+  push:
+    branches:
+      - main
+      - develop
+
+env:
+  Environment: Production
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest
+      
+      - name: Run tests
+        id: run_tests
+        run: |
+          pytest tests/
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    if: ${{success() && github.ref == 'refs/heads/main'}}
+    env:
+      MODEL_VERSION: ${{ github.ref }}
+      ENVIRONMENT: ${{ env.ENVIRONMENT }}
+    steps: 
+      - name: Checkout code:
+        uses: actions/checkout@v4
+
+      - name: Deploy to Production
+        run: |
+          echo "Deploying model version $MODEL_VERSION to $ENVIRONMENT"
+          python .github/workflows/deploy.py --version $MODEL_VERSION --env $ENVIRONMENT
