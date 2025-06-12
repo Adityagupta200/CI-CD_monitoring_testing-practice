@@ -31,7 +31,7 @@ jobs:
           echo "Deploying model version $MODEL_VERSION to $ENVIRONMENT"
           echo "Global note: $GLOBAL_NOTE"
           echo "Job note: $JOB_NOTE"
-          python deploy.py --version $MODEL_VERSION --env $ENVIRONMENT
+          python .github/workflows/deploy.py --version $MODEL_VERSION --env $ENVIRONMENT
           # env:
           #   MODEL_VERSION: ${{ github.sha }}
 
