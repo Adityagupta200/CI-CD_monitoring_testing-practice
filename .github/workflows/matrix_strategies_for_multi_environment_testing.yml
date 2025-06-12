@@ -1,20 +1,19 @@
 name: Matrix Strategies for Multi-Environment Testing
 on: push
+strategy:
+  matrix:
+    python-version: ["3.8", "3.9"]
+    platform: [cpu, gpu]
+    experimental: [false]
+    include:
+      - python-version: "3.10"
+        platform: cpu
+        experimental: true
 jobs:
   test:
-    strategy:
-      matrix:
-        python-version: ["3.8", "3.9"]
-        # os: [ubuntu-latest, windows-latest, macos-latest]
-        platform: [cpu, gpu]
-        include:
-          - python-version: "3.10"
-            platform: cpu
-            experimental: true
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental || false }}
+    continue-on-error: ${{ matrix.experimental }}
     steps:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-
