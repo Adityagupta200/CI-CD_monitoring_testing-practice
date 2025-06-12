@@ -37,7 +37,7 @@ jobs:
     if: ${{success() && github.ref == 'refs/heads/main'}}
     env:
       MODEL_VERSION: ${{ github.ref }}
-      ENVIRONMENT: ${{ env.ENVIRONMENT }}
+      ENVIRONMENT: $ENVIRONMENT
     steps: 
       - name: Checkout code
         uses: actions/checkout@v4
