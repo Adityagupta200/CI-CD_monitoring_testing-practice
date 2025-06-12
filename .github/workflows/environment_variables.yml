@@ -1,0 +1,50 @@
+name: MLOps model Deployment
+
+on: [push]
+
+# Workflow-level environment variables(available to all jobs and steps)
+env:
+  ENVIRONMENT: production
+  GLOBAL_NOTE: "This is available everywhere in the workflow"
+  MODEL_VERSION: ${{ github.sha }}
+
+jobs:
+  deploy-model:
+    runs-on: ubuntu-latest
+
+    # Job-level environment variable (overrides or adds to workflow level ones)
+    env:
+      JOB_NOTE: "This is only available in hte deploy-model job"
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+        # Step-level environment variable(overrides job and workflow level for this step)
+      - name: Set model version from commit SHA
+        run: echo "Model version is $MODEL_VERSION"
+        # env:
+        #   MODEL_VERSION: ${{ github.sha }}
+      
+      - name: Deploy model
+        run: |
+          echo "Deploying model version $MODEL_VERSION to $ENVIRONMENT"
+          echo "Global note: $GLOBAL_NOTE"
+          echo "Job note: $JOB_NOTE"
+          python deploy.py --version $MODEL_VERSION --env $ENVIRONMENT
+          # env:
+          #   MODEL_VERSION: ${{ github.sha }}
+
+      - name: Show GitHub context info
+        run: |
+          echo "Repository: ${{ github.repository }}"
+          echo "Actor: ${{ github.Actor }}"
+          echo "Branch: ${{ github.ref }}"
+          echo "Workflow run ID: ${{ github.run_id }}"
+
+      - name: Use env context in expressions
+        run: |
+          echo "Accessing ENVIRONMENT via context: ${{ env.ENVIRONMENT }}"
+          echo "Accessing MODEL_VERSION via context: ${{ env.MODEL_VERSION }}"
+          # env:
+          #   MODEL_VERSION: ${{ github.sha }}
