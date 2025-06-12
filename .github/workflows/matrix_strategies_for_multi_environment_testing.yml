@@ -12,7 +12,7 @@ jobs:
             platform: cpu
             experimental: true
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
+    continue-on-error: ${{ matrix.experimental || false }}
     steps:
       - uses: actions/setup-python@v4
         with:
