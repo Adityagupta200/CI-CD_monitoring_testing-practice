@@ -1,0 +1,13 @@
+name: PR Synchronize - Re-run Tests
+
+on:
+  pull_request:
+    types: [synchronize]
+
+jobs:
+  rerun-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Re-run tests on code changes
+        run: pytest tests/
