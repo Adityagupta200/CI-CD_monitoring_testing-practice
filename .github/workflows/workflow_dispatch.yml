@@ -1,0 +1,38 @@
+name: Manual and Automated Deployment Workflow
+
+on:
+  # Manual trigger from the GitHub UI or API
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options: 
+          - staging
+          - production
+        model_version:
+          description: 'Model version to deploy'
+          required: true
+          type: string
+    push:
+      branches:
+        - main
+      pull_request:
+        types: [opened, synchronize, reopened]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Print Deployment Parameters
+        run: |
+          echo "Deploying to environment: ${{ github.event.inputs.environment }}"
+          echo "Model version: ${{ github.event.inputs.model_version }}"
+      
+      - name: Deploy model
+        run: |
+          python deploy.py --version "${{ github.event.inputs.model_version }}" --env "${{ github.event.inputs.environment }}"
