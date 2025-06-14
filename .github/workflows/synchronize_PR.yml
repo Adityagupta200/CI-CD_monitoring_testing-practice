@@ -8,6 +8,10 @@ jobs:
   rerun-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
       - name: Re-run tests on code changes
-        run: pytest tests/
+        uses: actions/checkout@v4
+
+      - name: Run test
+        run: |
+          pip install pytest
+          pytest tests/
