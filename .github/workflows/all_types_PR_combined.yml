@@ -27,7 +27,7 @@ jobs:
       - run: pytest tests/
   
   full-test-suite:
-    if github.event.action == 'closed'
+    if github.event.action == 'ready_for_review'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
