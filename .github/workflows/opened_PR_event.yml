@@ -10,4 +10,6 @@ jobs:
     steps:    
       - name: Run initial model validation tests
         uses: actions/checkout@v4
-        run: pytest tests/test_basic.py
+        
+      - name: Run test
+        run: pytest tests/
