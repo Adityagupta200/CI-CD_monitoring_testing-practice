@@ -10,6 +10,12 @@ jobs:
     steps:    
       - name: Run initial model validation tests
         uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest
+          
         
       - name: Run test
         run: pytest tests/
