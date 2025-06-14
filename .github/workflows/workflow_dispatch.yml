@@ -12,10 +12,10 @@ on:
         options: 
           - staging
           - production
-        model_version:
-          description: 'Model version to deploy'
-          required: true
-          type: string
+      model_version:
+        description: 'Model version to deploy'
+        required: true
+        type: string
   push:
     branches:
       - main
