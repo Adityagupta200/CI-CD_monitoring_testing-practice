@@ -1,5 +1,5 @@
 def greet(name):
-    print("Hello, " + name)
+    return("Hello, " + name)
 
 def test_greet():
     assert greet("Alice") == "Hello, Alice"
