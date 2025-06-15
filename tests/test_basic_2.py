@@ -1,3 +1,5 @@
 def greet(name):
     print("Hello, " + name)
-greet("Alice")
+
+def test_greet():
+    assert greet("Alice") == "Hello, Alice"
