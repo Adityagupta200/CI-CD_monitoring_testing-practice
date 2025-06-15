@@ -1,0 +1,33 @@
+name: Dynamic Matrix Creation
+
+on: [push]
+
+jobs:
+  build_matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - id: set-matrix
+        run: echo 'matrix=["3.9", "3.10", "3.11"]' >> $GITHUB_OUTPUT
+
+  test:
+    needs: build-matrix
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: needs.build-matrix.outputs.matrix
+    
+    - name: Setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install pytest
+    
+    - name: Run test
+      run: pytest tests/
+
