@@ -17,6 +17,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
+      - name: Start minikube
+        uses: medyagh/setup-minikube@latest
+
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -26,18 +29,27 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mlops-demo:${{ matrix.python-version }}-${{ matrix.base-image }}-${{ matrix.deployment-target }}
-          build-args: |
-            PYTHON_VERSION=${{ matrix.python-version }}
-            BASE_IMAGE=${{ matrix.base-image }}
-            DEPLOYMENT_TARGET=${{ matrix.deployment-target }}
+      # - name: Build and push Docker image
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     push: true
+      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/mlops-demo:${{ matrix.python-version }}-${{ matrix.base-image }}-${{ matrix.deployment-target }}
+      #     build-args: |
+      #       PYTHON_VERSION=${{ matrix.python-version }}
+      #       BASE_IMAGE=${{ matrix.base-image }}
+      #       DEPLOYMENT_TARGET=${{ matrix.deployment-target }}
       
-      - name: Deploy to Kubernetes
-        if: matrix.deployment-target == 'production'
+      - name: Build Docker image in Minikube
         run: |
-          kubectl create deployment ml-app --image=${{ secrets.DOCKERHUB_USERNAME }}/mlops-demo:${{ matrix.python-version }}-${{ matrix.base-image }}-${{ matrix.deployment-target }}
+          minikube image build -t mlops-demo:${{ matrix.python-version }}-${{ matrix.base-image }}-${{ matrix.deployment-target }} .
+
+      - name: Deploy to Minikube
+        run: |
+          kubectl apply -f deploy/k8s.yaml
+          kubectl rollout status deployment/ml-app
+          
+      # - name: Deploy to Kubernetes
+      #   if: matrix.deployment-target == 'production'
+      #   run: |
+      #     kubectl create deployment ml-app --image=${{ secrets.DOCKERHUB_USERNAME }}/mlops-demo:${{ matrix.python-version }}-${{ matrix.base-image }}-${{ matrix.deployment-target }}
