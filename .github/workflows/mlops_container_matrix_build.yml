@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.9", "3.10", "3.11"]
-        base-image: [alpine, ubuntu, debian]
+        base-image: [python]
         deployment-target: [staging, production]
     steps:
       - name: Checkout code
