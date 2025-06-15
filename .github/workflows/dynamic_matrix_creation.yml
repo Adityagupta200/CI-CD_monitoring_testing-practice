@@ -18,6 +18,7 @@ jobs:
       matrix:
         python-version: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
     
+    steps:
       - name: Setup python
         uses: actions/setup-python@v4
         with:
