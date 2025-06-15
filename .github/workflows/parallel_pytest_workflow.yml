@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        test_file: ${{ fromJson['test_basic', 'test_basic_2'] }}
+        test_file: [test_basic, test_basic_2]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
