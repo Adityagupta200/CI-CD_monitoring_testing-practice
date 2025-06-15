@@ -1,0 +1,43 @@
+name: MLOps Container Matrix Build
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+        base-image: [alpine, ubuntu, debian]
+        deployment-target: [staging, production]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Docker Buildx
+        uses: docker/setup-build-action@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/mlops-demo:${{ matrix.python-version }}-${{ matrix.base-image }}-${{ matrix.deployment-target }}
+          build-args: |
+            PYTHON_VERSION=${{ matrix.python-version }}
+            BASE_IMAGE=${{ matrix.base-image }}
+            DEPLOYMENT_TARGET=${{ matrix.deployment-target }}
+      
+      - name: Deploy to Kubernetes
+        if: matrix.deployment-target == 'production'
+        run: |
+          kubectl create deployment ml-app --image=${{ secrets.DOCKERHUB_USERNAME }}/mlops-demo:${{ matrix.python-version }}-${{ matrix.base-image }}-${{ matrix.deployment-target }}
