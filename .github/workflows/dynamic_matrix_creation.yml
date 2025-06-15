@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+        python-version: ${{ fromJson(needs.build_matrix.outputs.matrix) }}
     
     steps:
       - name: Setup python
