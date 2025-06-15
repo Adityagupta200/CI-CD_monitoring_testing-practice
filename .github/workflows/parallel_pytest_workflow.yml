@@ -1,0 +1,30 @@
+name: Parallel pytest matrix
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pytest:
+    name: Pytest marix
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test_file: ${{ fromJson['test_basic', 'test_basic_2'] }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+          with:
+            python-version: '3.10'
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest
+    
+      - name: Run Pytests for ${{ matrix.tset_file }}
+        run: |
+          pytest tests/${{ matrix.test_file }}.py
