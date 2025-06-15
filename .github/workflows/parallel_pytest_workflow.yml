@@ -25,6 +25,6 @@ jobs:
           pip install -r requirements.txt
           pip install pytest
     
-      - name: Run Pytests for ${{ matrix.tset_file }}
+      - name: Run Pytests for ${{ matrix.test_file }}
         run: |
           pytest tests/${{ matrix.test_file }}.py
