@@ -37,3 +37,9 @@ jobs:
           kubectl rollout status deployment/ml-app --timeout=180s
           kubectl get pods -o wide
           kubectl describe deployment ml-app
+
+      - name: Get pod logs
+          run: kubectl logs deployment/ml-app || true
+
+      - name: Describe pods
+          run: kubectl describe pods || true
