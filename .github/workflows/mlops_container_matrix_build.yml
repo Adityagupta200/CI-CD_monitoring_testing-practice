@@ -39,7 +39,7 @@ jobs:
           kubectl describe deployment ml-app
 
       - name: Get pod logs
-          run: kubectl logs deployment/ml-app || true
+        run: kubectl logs deployment/ml-app || true
 
       - name: Describe pods
-          run: kubectl describe pods || true
+        run: kubectl describe pods || true
