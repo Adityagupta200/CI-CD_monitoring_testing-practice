@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: ml-app
-        image: mlops-demo:3.10-python-production   # Tag will match your build
+        image: mlops-demo:${IMAGE_TAG}
         imagePullPolicy: Never
         ports:
         - containerPort: 8080
