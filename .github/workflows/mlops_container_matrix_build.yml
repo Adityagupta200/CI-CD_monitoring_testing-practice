@@ -44,6 +44,13 @@ jobs:
         run: |
           minikube image build -t mlops-demo:${{ matrix.python-version }}-${{ matrix.base-image }}-${{ matrix.deployment-target }} .
 
+      - name: Set IMAGE_TAG env
+        run: echo "IMAGE_TAG=${{ matrix.python.version }}-${{ matrix.base-image }}-${{ matrix.deployment-target }}" >> $GITHUB_ENV
+
+      - name: Substitute image tag in manifest
+        run: |
+          envsubst < deploy/k8s.yaml > deploy/k8s-subst.yaml
+
       - name: Deploy to Minikube
         run: |
           kubectl apply -f deploy/k8s.yaml
