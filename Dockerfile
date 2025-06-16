@@ -1,16 +1,23 @@
+# Use an official Python runtime as the base image
 FROM python:3.9-slim
 
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy requirements first for better caching
+# Copy requirements.txt first for better caching
 COPY requirements.txt .
+
+# Install any needed dependencies specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application code
+# Copy the rest of the application code
 COPY . .
 
-# Expose port
+# Make port 8080 available to the world outside this container
 EXPOSE 8080
 
-# Run the application
+# Define environment variable
+ENV FLASK_APP=main.py
+
+# Run main.py when the container launches
 CMD ["python", "main.py"]
