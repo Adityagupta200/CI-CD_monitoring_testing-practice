@@ -39,7 +39,9 @@ jobs:
           kubectl describe deployment ml-app
 
       - name: Get pod logs
+        if: always()
         run: kubectl logs deployment/ml-app || true
 
       - name: Describe pods
+        if: always()  
         run: kubectl describe pods || true
