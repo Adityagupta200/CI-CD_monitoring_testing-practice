@@ -1,3 +1,51 @@
+# name: MLOps Container Matrix Build
+
+# on:
+#   push:
+#     branches: [main]
+#   workflow_dispatch:
+
+# jobs:
+#   build-and-push:
+#     runs-on: ubuntu-latest
+#     strategy:
+#       matrix:
+#         python-version: ["3.9", "3.10", "3.11"]
+#         base-image: [python]
+#         deployment-target: [staging, production]
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       - name: Start minikube
+#         uses: medyagh/setup-minikube@latest
+
+#       - name: Build Docker image in Minikube
+#         run: |
+#           minikube image build -t mlops-demo:${{ matrix.python-version }}-${{ matrix.base-image }}-${{ matrix.deployment-target }} .
+
+#       - name: Set IMAGE_TAG env
+#         run: echo "IMAGE_TAG=${{ matrix.python-version }}-${{ matrix.base-image }}-${{ matrix.deployment-target }}" >> $GITHUB_ENV
+
+#       - name: Substitute image tag in manifest
+#         run: |
+#           envsubst < deploy/k8s.yaml > deploy/k8s-subst.yaml
+
+#       - name: Deploy to Minikube
+#         run: |
+#           kubectl apply -f deploy/k8s-subst.yaml
+#           kubectl rollout status deployment/ml-app --timeout=180s
+#           kubectl get pods -o wide
+#           kubectl describe deployment ml-app
+
+#       - name: Get pod logs
+#         if: always()
+#         run: kubectl logs deployment/ml-app || true
+
+#       - name: Describe pods
+#         if: always()  
+#         run: kubectl describe pods || true
+
 name: MLOps Container Matrix Build
 
 on:
@@ -17,12 +65,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: List repository contents
+        run: |
+          echo "Repository structure:"
+          find . -type f -name "*.py" -o -name "Dockerfile" -o -name "requirements.txt" | head -20
+
       - name: Start minikube
         uses: medyagh/setup-minikube@latest
 
       - name: Build Docker image in Minikube
         run: |
+          if [ ! -f Dockerfile ]; then
+            echo "ERROR: Dockerfile not found in repository root"
+            exit 1
+          fi
           minikube image build -t mlops-demo:${{ matrix.python-version }}-${{ matrix.base-image }}-${{ matrix.deployment-target }} .
+
+      - name: Verify image was built
+        run: |
+          minikube image ls | grep mlops-demo || echo "Image not found in minikube"
 
       - name: Set IMAGE_TAG env
         run: echo "IMAGE_TAG=${{ matrix.python-version }}-${{ matrix.base-image }}-${{ matrix.deployment-target }}" >> $GITHUB_ENV
@@ -30,18 +91,20 @@ jobs:
       - name: Substitute image tag in manifest
         run: |
           envsubst < deploy/k8s.yaml > deploy/k8s-subst.yaml
+          echo "Generated manifest:"
+          cat deploy/k8s-subst.yaml
 
       - name: Deploy to Minikube
         run: |
           kubectl apply -f deploy/k8s-subst.yaml
           kubectl rollout status deployment/ml-app --timeout=180s
-          kubectl get pods -o wide
-          kubectl describe deployment ml-app
 
       - name: Get pod logs
         if: always()
-        run: kubectl logs deployment/ml-app || true
+        run: |
+          kubectl get pods
+          kubectl logs deployment/ml-app || echo "No logs available"
 
       - name: Describe pods
-        if: always()  
+        if: always()
         run: kubectl describe pods || true

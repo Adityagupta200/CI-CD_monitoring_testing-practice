@@ -1,10 +1,16 @@
-ARG PYTHON_VERSION=3.10
-
-FROM python:${PYTHON_VERSION}-slim
+FROM python:3.9-slim
 
 WORKDIR /app
-COPY . /app
 
-RUN pip install --upgrade pip && pip install -r requirements.txt
+# Copy requirements first for better caching
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy application code
+COPY . .
+
+# Expose port
+EXPOSE 8080
+
+# Run the application
 CMD ["python", "main.py"]
