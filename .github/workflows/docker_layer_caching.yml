@@ -34,5 +34,5 @@ jobs:
       # This step is necessary to prevent cache from growing indefinetely
       - name: Move cache
         run: |
-        rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
