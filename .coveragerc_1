@@ -1,0 +1,67 @@
+# .coveragerc - Coverage.py configuration file
+[run]
+source = src
+branch = True
+omit = 
+    tests/*
+    setup.py
+    */venv/*
+    */virtualenv/*
+    */__pycache__/*
+    */migrations/*
+    */settings/*
+
+[report]
+# Regexes for lines to exclude from consideration
+exclude_also =
+    # Don't complain about missing debug-only code
+    def __repr__
+    if self\.debug
+
+    # Don't complain if tests don't hit defensive assertion code
+    raise AssertionError
+    raise NotImplementedError
+
+    # Don't complain if non-runnable code isn't run
+    if 0:
+    if __name__ == .__main__.:
+
+    # Don't complain about abstract methods, they aren't run
+    @(abc\.)?abstractmethod
+
+    # Don't complain about type checking imports
+    if TYPE_CHECKING:
+
+    # Don't complain about platform specific code
+    pragma: no cover
+
+# Target coverage percentage - fail if below this threshold
+fail_under = 80
+
+# Precision for coverage percentage reporting  
+precision = 2
+
+# Show missing lines in coverage report
+show_missing = True
+
+# Skip files with 100% coverage to focus on areas needing attention
+skip_covered = False
+
+# Skip empty files (no executable code)
+skip_empty = True
+
+# Sort coverage report by coverage percentage (descending)
+sort = -Cover
+
+[html]
+directory = htmlcov
+title = MLOps Project Coverage Report
+show_contexts = True
+
+[xml]
+output = coverage.xml
+
+[json]
+output = coverage.json
+pretty_print = True
+show_contexts = True
