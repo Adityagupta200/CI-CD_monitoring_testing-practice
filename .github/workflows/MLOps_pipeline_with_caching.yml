@@ -1,6 +1,6 @@
 name: MLOps Pipeline with Caching
 
-on: 
+on:
   workflow_dispatch:
 
 jobs:
@@ -43,4 +43,4 @@ jobs:
           push: false
           tags: mlops-model:latest
           cache-from: type=gha
-          cache-to: type=gha, mode=max
+          cache-to: type=gha,mode=max
