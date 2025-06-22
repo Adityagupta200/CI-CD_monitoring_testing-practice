@@ -1,6 +1,7 @@
 name: MLOps model Deployment
 
-on: [push]
+on: 
+  workflow_dispatch:
 
 # Workflow-level environment variables(available to all jobs and steps)
 env:

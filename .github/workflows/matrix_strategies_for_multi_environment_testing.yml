@@ -1,5 +1,6 @@
 name: Matrix Strategies for Multi-Environment Testing
-on: push
+on: 
+  workflow_dispatch:
 
 jobs:
   test:

@@ -16,9 +16,9 @@ on:
         description: 'Model version to deploy'
         required: true
         type: string
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
