@@ -1,0 +1,45 @@
+name: MLOps Pipeline with Caching
+
+on: [push]
+
+jobs:
+  build-and-train:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Cache Python Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Cache dataset processing
+        id: cache-dataset
+        uses: actions/cache@v3
+        with:
+          path: data/processed
+          key: ${{ runner.os }}-data-${{ hashFiles('data/raw/**') }}
+      
+      - name: Preprocess data
+        if: steps.cache-dataset.outputs.cache-hit != 'true'
+        run: python preprocess.py
+        id: preprocess-data
+      
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and train
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: false
+          tags: mlops-model:latest
+          cache-from: type=gha
+          cache-to: type=gha, mode=max
