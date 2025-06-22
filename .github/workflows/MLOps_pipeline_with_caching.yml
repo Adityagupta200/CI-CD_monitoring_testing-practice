@@ -1,7 +1,10 @@
 name: MLOps Pipeline with Caching
 
-on: [push]
-
+on: 
+  branches: 
+    - main 
+    workflow_dispatch:
+    
 jobs:
   build-and-train:
     runs-on: ubuntu-latest
