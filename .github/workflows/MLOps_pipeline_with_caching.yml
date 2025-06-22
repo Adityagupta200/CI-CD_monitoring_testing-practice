@@ -2,8 +2,6 @@ name: MLOps Pipeline with Caching
 
 on: 
   workflow_dispatch:
-    branches: 
-      - main 
 
 jobs:
   build-and-train:
