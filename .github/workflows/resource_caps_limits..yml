@@ -1,0 +1,28 @@
+# name: Setting timeout limits- Job Level Timeout
+
+# on: 
+#   workflow_dispatch:
+
+# jobs:
+#   job-level-timeout:
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 30 # Kill job if it runs longer than 30 minutes
+#     steps:
+#       - name: Build Application
+#         run: make build
+  
+#   step-level-timeout:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Run Tests
+#         timeout-minutes: 10 # Kill this step if it takes more than 10 minutes
+#         run: npm test
+  
+#   container-resource-limits:
+#     runs-on: ubuntu-latest
+#     container:
+#       image: node:18
+#       options: --cpus 2 -- memory 4G # Limit to 2 CPUs and 4 GB RAM
+#     steps:
+#       - name: Build with Limited Resources
+#         run: npm run build

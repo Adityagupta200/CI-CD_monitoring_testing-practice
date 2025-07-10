@@ -1,0 +1,21 @@
+# name: Conditional Job Execution
+
+# on: 
+#   workflow_dispatch:
+
+# jobs:
+#   frontend-tests:
+#     if: contains(github.event.head_commit.modified, 'frontend/')
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Test Frontend
+#         run: npm test
+  
+#   backend-tests:
+#     if: contains(github.event.head_commit.modified, 'backend/')
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Test Backend
+#         run: python -m pytest
+      
+      

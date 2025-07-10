@@ -1,0 +1,37 @@
+# name: Parallel Workflow
+# on: [push]
+
+# jobs:
+#   unit-test:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Run Unit Tests
+#         runs: npm test
+
+#   integration-test:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+      
+#       - name: Run Integration Tests
+#         run: npm run test:integration
+  
+#   lint:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+
+#       - name: Run Linting
+#         run: npm run lint
+  
+#   deploy:
+#     runs-on: ubuntu-latest
+#     needs: [unit-test, integration-test, lint]
+#     steps:
+#       - name: Deploy Application
+#         run: ./deploy.sh

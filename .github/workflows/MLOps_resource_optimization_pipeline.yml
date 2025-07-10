@@ -1,0 +1,119 @@
+# name: Optimized MLOps Pipeline
+
+# on:
+#   schedule:
+#     - cron: '0 2 * * 6-7'
+#   workflow_dispatch:
+
+# # Prevent multiple deployments from running simultaneously
+# concurrency:
+#   group: mlops-pipeline-${{ github.ref }}
+#   cancel-in-progress: true
+
+# jobs:
+#   activity-check:
+#     if: github.event_name == 'schedule'
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 5
+#     outputs:
+#       should-run: ${{ steps.check.outputs.active }}
+#     steps:
+#       - name: Check Repository Activity
+#         id: check
+#         run: |
+#           # Skip if no commits in last week for scheduled runs
+#           RECENT_COMMITS=$(curl -s "https://api.github.com/repos/${{ github.repository }}/commits?since=$(date -d '7 days ago' --iso-8601)" | jq length )
+#           echo "active=${[$RECENT_COMMITS -gt 0] && echo true || echo false}" >> $GITHUB_OUTPUT
+#   data-validation:
+#     if: github.event_name == 'workflow_dispatch' || needs.activity-check.outputs.should-run == 'true'
+#     needs : [activity-check]
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 15
+#     container:
+#       image: python:3.9
+#       options: --cpus 1 --memory 2G
+#     steps:
+#       - uses: actions/checkout@v3
+      
+#       - name: Cache Dependencies
+#         uses: actions/cache@v3
+#         with:
+#           path: ~/.cache/pip
+#           key: ${{ runner.os }}-pip-${{hashFiles('requirements.txt') }}
+
+#       - name: Validate Data
+#         run: python validate_data.py
+#   feature-engineering:
+#     if: github.event_name == 'workflow_dispatch' || needs.activity-check.outputs.should-run == 'true'
+#     needs: [activity-check]
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 20
+#     container: 
+#       image: python:3.9
+#       options: --cpus 2 --memory 4G
+#     steps:
+#       - uses: actions/checkout@v3
+
+#       - name: Cache Dependencies
+#         uses: actions/cache@v3
+#         with:
+#           path: ~/.cache/pip
+#           key: ${{ runner.os }}-pipi${{ hashFiles('requirements.txt') }}
+        
+#       - name: Engineer Features
+#         run: python feature_engineering.py
+      
+#   # Parallel model training with matrix strategy
+#   model-training:
+#     needs: [data-validation, feature_engineering]
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 30
+#     strategy:
+#       matrix:
+#         model: [random_forest, xgboost, neural_network]
+#         max_parallel: 2
+#       steps:
+#         - uses: actions/checkout@v3
+#         - name: Train ${{ matrix.model }}
+#           env:
+#             MODEL_TYPE: ${{ matrix.model }}
+#           run: python train_model.py --model $MODEL_TYPE
+  
+#   # Model evaluation (waits for all training to complete)
+#   model-evaluation:
+#     needs: [model-training]
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 30
+#     steps:
+#       - uses: actions/checkout@v3
+#       - name: Evaluate Models
+#         run: python evaluate_models.py
+  
+#   # Resource-constrained deployment
+#   deploy:
+#     needs: [model-evaluation]
+#     if: github.ref == 'refs/heads/main'
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 45
+#     environment: production
+#     container:
+#       image: alpine:latest
+#       options: --cpus 1 --memory 1G
+#     steps:
+#       - name: Deploy Best Model
+#         env:
+#           DEPLOY_KEY: ${{ secrets.PRODUCTION_DEPLOY_KEY }}
+#         run: ./deploy_model.sh
+
+#   # Cleanup job(runs regardless of other job outcomes
+#   cleanup:
+#   if: always()
+#   needs: [deploy]
+#   runs-on: ubuntu-latest
+#   timeout-minutes: 10
+#   steps:
+#     - name: Cleanup Temporary Resources
+#     run: |
+#       echo "Cleaning up temporary files and resources"
+#       rm -rf .cache
+#       rm -rf .venv

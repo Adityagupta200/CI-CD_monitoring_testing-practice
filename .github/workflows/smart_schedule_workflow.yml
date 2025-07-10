@@ -1,0 +1,40 @@
+# name: Smart schedule workflow
+# on:
+#   schedule:
+#     # Run only on weekdays at 2 AM UTC(off-peak hours) 
+#     - cron: '0 2 * * 6-7'
+#   # Also allow manual triggering 
+#   workflow_dispatch:
+
+# jobs:
+#   check-activity:
+#     runs-on: ubuntu-latest
+#     outputs:
+#       should-run: ${{ steps.activity.outputs.active }}
+#     steps:
+#       - name: Check Repository Activity
+#         id: activity
+#         run: |
+#           # Check if there have been commits in the last 7 days
+#           RECENT_COMMITS=$(curl -s "https://api.github.com/repos/${{ github.repository }}/commits?since=$(date -d '7 days ago' --iso-8601)" | jq length)
+#           if [ "$RECENT_COMMITS" -gt 0 ]; then
+#             echo "active=true" >> $GITHUB_OUTPUT
+#           else
+#             echo "active=false" >> $GITHUB_OUTPUT
+#           fi
+#   build:
+#     needs: check-activity
+#     if: needs.check-activity.outputs.should-run == 'true'
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Build Project
+#         run: echo "Building project..."
+  
+#   notify-inactive:
+#     needs: check-activity
+#     if: needs.check-activity.output.should-run == 'false'
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Log Skipped Build
+#         run: echo "Skipping build due to repository inactivity"
+

@@ -1,0 +1,74 @@
+name: MLOps Automated Testing Example
+
+on: 
+  # PR Gate Tests
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches: [main, staging]
+  
+  schedule:
+    - cron: '0 2 * * *'
+
+jobs:
+  # Fast tests for PR gates
+  pr-gate-tests:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+      
+      - name: Run unit tests
+        run: |
+          pytest tests/unit/ -v --cov=src --cov-report=xml
+      
+      - name: Data Validation Tests
+        run: |
+          pytest tests/data-validation/ -v --cov=src --cov-report=html
+      
+      - name: Run model smoke tests
+        run: pytest tests/models/test/test_smoke.py -v
+
+  # Comprehensive nightly testing
+  nightly-testing:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install pytest pytest-cov
+      
+      - name: Run test suite
+        run: |
+          pytest tests/ -v --cov=src --cov-report=html
+      
+      - name: Run integration tests
+        run: |
+          pytest tests/integration/ -v
+      
+      - name: Run model performance tests
+        run: |
+          pytest tests/models/test_performance.py -v
+      
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report
+          path: htmlcov/
+      
+

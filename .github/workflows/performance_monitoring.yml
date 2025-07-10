@@ -1,0 +1,14 @@
+# name: Performance Monitoring
+
+# on: [workflow_run]
+
+# jobs:
+#   monitor:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Log Performance Metrics
+#         run: |
+#           echo "Workflow: ${{ github.workflow_run }}"
+#           echo "Duration: ${{ github.event.workflow_run.duration }}"
+#           echo "Conclusion: ${{ github.event.workflow_run.conclusion }}"
+#           # Send metrics to monitoring system
