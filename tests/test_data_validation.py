@@ -434,7 +434,7 @@ def test_parameterized_value_ranges(sample_dataset, column, min_val, max_val):
     Test that values are within ranges defined in the above parameterize marker.
     
     """
-    non_null_values = samples_dataset[column].dropna()
+    non_null_values = sample_dataset[column].dropna()
     actual_min_value = non_null_values.min()
     actual_max_value = non_null_values.max()
 
