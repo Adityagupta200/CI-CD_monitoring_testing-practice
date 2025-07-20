@@ -1,0 +1,27 @@
+groups:
+  - name: api.rules
+    rules:
+      - alert: HighLatency
+        expr: histogram_quantile(0.95,
+              sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 0.5
+        for: 2m
+        labels:
+          severity: page
+        annotations:
+          summary: "95th percentile latency > 500 ms"
+      
+      - alert: TooManyErrors
+        expr: rate(http_requests_total{status=~"5.."}[2m]) > 0
+        for: 1m
+        labels:
+          severity: page
+        annotations: 
+          summary: "5XX errors detected"
+      
+      - alert: TestAlert
+        expr: vector(1)
+        for: 1m
+        labels:
+          severity: page
+        annotations:
+          summary: "Test Alert, integration works" 

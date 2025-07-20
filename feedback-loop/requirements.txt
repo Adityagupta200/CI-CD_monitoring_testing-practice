@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+scikit-learn
+mlflow
+evidently
+apache-airflow==2.9.0
+pandas

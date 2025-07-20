@@ -1,0 +1,45 @@
+name: Terraform Insrastructure
+on:
+  workflow_dispatch:
+
+jobs:
+  runs-on: ubuntu-latest
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.0
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws_region: us-west-2
+    
+    - name: Initialize Working Directory containing Terraform configuration files 
+      working-directory: ./terraform
+      run: |
+        terraform init
+    
+    - name: Terraform Plan (Makes a plan to reach the desired state)
+      working-directory: ./terraform
+      run: terraform plan -out=tfplan
+    
+    - name: Terraform apply(Applies the plan) 
+      if: github.ref == 'refs/heads/main'
+      working-directory: ./terraform
+      run: terraform apply -auto-approve tfplan
+
+    - name: Output Infrastructure details
+      if: github.ref == 'refs/heads/main'
+      working-directory: ./terraform
+      run: |
+        echo "Infrastructure created successfully!"
+        terraform output
+
+
+      

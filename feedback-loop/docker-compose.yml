@@ -1,0 +1,82 @@
+services:
+  api:
+    build:
+      context: ./api
+    container_name: iris-api
+    restart: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/app
+      - ./model.pkl:/app/model.pkl
+      - ./mlruns:/mlruns
+    environment:
+      - MLFLOW_TRACKING_URI=sqlite:///mlruns.db
+    depends_on:
+      - mlflow
+  
+  mlflow:
+    image: mlflow/mlflow:latest
+    container_name: mlflow-server
+    restart: always
+    ports: 
+      - "5000:5000"
+    volumes:
+      - ./mlruns:/mlruns
+      - ./model.pkl:/app/model.pkl
+    environment:
+      - MLFLOW_TRACKING_URI=sqlite:///mlruns.db
+    command: >
+      mlflow server
+      --backend-store-uri sqlite:///mlruns.db
+      --default-artifact-root /mlruns
+      --host 0.0.0.0
+  
+  airflow:
+    image: apache/airflow:2.9.0
+    container_name: airflow
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__CORE__SQL__ALCHEMY_CONN=sqlite:///tmp/airflow/airflow.db
+      - AIRFLOW__DAGS_FOLDER=/opt/airflow/dags
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+    volumes:
+      - ./airflow:/opt/airflow/dags
+      - ./monitor:/opt/airflow/monitor
+      - ./train.py:/opt/airflow/train.py
+      - ./model.pkl:/opt/airflow/model.pkl
+      - /tmp:/tmp # For drift flag file
+    depends_on:
+      - api
+      - mlflow
+    command: >
+      bash -c "airflow db init && airflow users create\
+        --username admin --password admin --firstname Air --lastname Flow \
+        --role Admin --email admin@example.com && \
+        airflow webserver & airflow scheduler"
+  
+  # Add a dedicated container to run the drift check
+  drift-check:
+    build:
+      context: ./monitor
+    container_name: drift-check
+    volumes:
+      - ./monitor:/code/monitor
+      - ./mlruns:/mlruns
+      - ./model.pkl:/code/model.pkl
+      - /tmp:/tmp
+    depends_on:
+      - mlflow
+    command: ["python", "/code/monitor/drift_check.py"]
+
+networks:
+  default:
+    driver: bridge
+
+volumes:
+  mlruns:
+  airflow_db:
+

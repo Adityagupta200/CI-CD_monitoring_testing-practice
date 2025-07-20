@@ -1,0 +1,73 @@
+# name: Inegration Testing
+# on:
+#   push:
+#     branches: [staging]
+#   pull_request:
+#     branches: [staging]
+
+# jobs:
+#   integration-tests:
+#     runs-on: ubuntu-latest
+#     services:
+#       # Set up database service for integration tests
+#       postgres:
+#         image: postgres:13
+#         env:
+#           POSTGRES_PASSWORD: postgres
+#           POSTGRES_DB: testdb
+#         options: >-
+#           --health-cmd pg_isready
+#           --health-interval 10s
+#           --health-timeout 5s
+#           --health-retries 5
+      
+#       # Sets up Redis for caching tests
+#       redis:
+#         image: redis:6
+#         options: >-
+#           --health-cmd "redis-cli ping"
+#           --health-interval 10s
+#           --health-timeout 5s
+#           --health-retires 5
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+      
+#       - name: Setup python
+#         uses: actions/setup-python@v4
+#         with:
+#           python-version: '3.9'
+      
+#       - name: Install Dependencies
+#         run: |
+#           pip install -r requirements.txt 
+#           pip install pytest pytest-cov
+      
+#       - name: Wait for services
+#         run: |
+#           sleep 10 # Give services time to start
+      
+#       - name: Run Database Migrations
+#         run: |
+#           python manage.py migrate
+#         env:
+#           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/testdb
+#           REDIS_URL: redis://localhost:6379
+      
+#       - name: Test API endpoints
+#         run: |
+#           python -m pytest tests/api/ -v
+      
+#       - name: Test component interactions
+#         run: |
+#           python -m pytest --html=integration-report.html tests/integration/ -v
+      
+#       - name: Upload test results
+#         uses: actions/upload-artifact@v3
+#         if: always()
+#         with:
+#           name: integration-test-results
+#           path: integration-report.html
+
+      
+

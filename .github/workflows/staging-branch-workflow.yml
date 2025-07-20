@@ -1,0 +1,48 @@
+# # Workflow to run nightly builds and create a pull request if nightly build are taking place
+# name: Staging Branch
+
+# on:
+#   push:
+#     branches: [ staging ]
+#   - schedule:
+#       # Nightly build at 2 AM UTC
+#       - cron: '0 2 * * *'
+# jobs:
+#   staging-build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v3
+      
+#       - name: Set up pyhon
+#         uses: actions/setup-python@v4
+#         with:
+#           python-version: '3.9'
+      
+#       - name: Install Dependencies
+#         run: |
+#           python -m pip install --upgrade pip
+#           pip install -r requirements.txt
+      
+#       - name: Run staging tests
+#         run: |
+#           python -m pytest tests/ -v
+      
+#       - name: Build application
+#         run: |
+#           python setup.py build
+      
+#       - name: Check if should merge to main
+#         if: github.event_name == 'schedule' # Only run this step if nightly builds are done
+#         run: |
+#           echo "Nightly build successfull - ready for main merge"
+      
+#       - name: Create PR to main (if nightly build)
+#         if: success()
+#         uses: peter-evans/create-pull-request@v5
+#         with:
+#           token: ${{ secrets.GITHUB_TOKEN }}
+#           branch: staging-to-main
+#           title: 'Nightly Build: Merge staging to main'
+#           body: 'Automated PR from successful nightly build'
+        

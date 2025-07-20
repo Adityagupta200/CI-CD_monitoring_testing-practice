@@ -1,0 +1,61 @@
+name: Complete ML Deployment Pipeline
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-ml-model:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup python
+        uses: actions/setup-python@v3
+      
+      - name: Install and test
+        run: |
+          pip install -r requirements.txt
+          pip install pytest
+
+          pytest tests/ -v
+      
+      - name: Build ML model container
+        run: |
+          docker build -t ml-model:${{ github.sha }} .
+          docker tag ml-model:${{ github.sha }} ml-model:latest
+      
+      - name: Setup terraform
+        uses: hashicorp/setup-terraform@v2
+      
+      - name: Cache Terraform plugins
+        uses: actions/cache@v4
+        with:
+          path: terraform/.terraform 
+          key: ${{ runner.os }}-terraform-${{ hashFiles('terraform/*.tf') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
+      
+      - name: Deploy Infrastructure
+        run: |
+          cd terraform
+          terraform init
+          terraform plan -out=tfplan
+          terraform apply -auto-approve tfplan
+      
+      # Deploy container to the provisioned infrastructure
+      - name: Deploy to production
+        run: |
+          # Get infrastructure detals from Terraform
+          SERVER_IP= $( terraform output -raw server_ip )
+
+          # Deploy container to the server
+          ssh -o StrictHostKeyChecking=no ubuntu@SERVER_IP << 'EOF'
+            docker pull ml-model:latest
+            docker stop ml-app || true
+            docker rm ml-app || true
+            docker run -d --name: ml-app -p 8000:8000 ml-model:latest
+          EOF
+          echo "ML model deployed successfully!"
+          echo "Access you model at: http://$SERVER_IP:8000"
+
