@@ -2,8 +2,8 @@ import pandas as pd
 
 
 # Example dataframes; replace with your real data
-ref_data = pd.read_csv("C:/Users/abc/Downloads/SWaT.A8_June 2021/For Mark/_20210624_100741/20210624_111312.csv")
-cur_data = pd.read_csv("C:/Users/abc/Downloads/SWaT.A8_June 2021/For Mark/_20210624_100741/20210624_122008.csv")
+ref_data = pd.read_csv("ref_dataset")
+cur_data = pd.read_csv("cur_dataset")
 
 from evidently.report import Report
 from evidently.metric_preset import DataDriftPreset
