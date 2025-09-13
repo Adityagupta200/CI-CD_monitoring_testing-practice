@@ -9,8 +9,8 @@ on:
   push:
     branches: [main, staging]
   
-  schedule:
-    - cron: '0 2 * * *'
+  # schedule:
+  #   - cron: '0 2 * * *'
 
 jobs:
   # Fast tests for PR gates
